@@ -1,9 +1,8 @@
 #!/bin/bash
-#SBATCH --time=00:10:00
+#SBATCH --job-name=gpt-j-test
+#SBATCH --partition short
+#SBATCH --mem 60000
 #SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --job-name=python_example
-#SBATCH --mem=2048
-module load Python/3.8.6-GCCcore-10.2.0
-
-python3 test.py
+#SBATCH --ntasks=24
+#SBATCH --time=00:30:00
+poetry run python -m ltp run 29522_test
