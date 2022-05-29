@@ -52,7 +52,7 @@ def run(name):
     model, tokenizer = load_gpt_j()
 
     for i, row in enumerate(prompted_validation):
-        with open(f"{name}_{i}.txt", "w") as out:
+        with open(f"out/{name}_{i}.txt", "w") as out:
             generated_text = prompt(model, tokenizer, row["prompt"])
             out.write(generated_text)
 

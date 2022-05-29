@@ -5,4 +5,4 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=24
 #SBATCH --time=00:30:00
-poetry run python -m ltp run 29522_test
+poetry run python -m ltp run 29522_gpt_j_test

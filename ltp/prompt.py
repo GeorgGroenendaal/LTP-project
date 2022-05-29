@@ -33,9 +33,9 @@ def get_prompted_validation():
         prompt = ""
 
         for _, row in few_shots.iterrows():
-            prompt += f"{row['sentence']} :label: {row['label']}>\n"
+            prompt += f"{row['sentence']}####{row['label']}<|endoftext|>\n"
 
-        prompt += f"{inp['sentence']} :label:"
+        prompt += f"{inp['sentence']}####"
 
         return {"prompt": prompt}
 
@@ -61,7 +61,7 @@ def prompt(model, tokenizer, prompt):
         input_ids,
         do_sample=True,
         temperature=0.9,
-        max_length=10,
+        max_length=50,
     )
 
     return tokenizer.batch_decode(gen_tokens)[0]
