@@ -9,7 +9,12 @@ load_dotenv()
 
 def get_few_shots():
     train = pd.read_csv("data/corpus_train.csv")
-    few_shots = train.sample(20, random_state=42)
+    few_shots = (
+        train.groupby("label", group_keys=False)
+        .apply(lambda x: x.sample(min(len(x), 3), random_state=313))
+        .sample(frac=1, random_state=313)
+        .reset_index(drop=True)
+    )
     few_shots.to_csv("data/cache/few_shots.csv")
 
 
@@ -33,7 +38,7 @@ def get_prompted_validation():
         prompt = ""
 
         for _, row in few_shots.iterrows():
-            prompt += f"{row['sentence']}####{row['label']}<|endoftext|>\n"
+            prompt += f"{row['sentence']}####<{row['label']}><|endoftext|>\n"
 
         prompt += f"{inp['sentence']}####"
 
@@ -60,8 +65,8 @@ def prompt(model, tokenizer, prompt):
     gen_tokens = model.generate(
         input_ids,
         do_sample=True,
-        temperature=0.9,
-        max_length=50,
+        temperature=0.4,
+        max_length=input_ids.size()[1] + 6,
     )
 
     return tokenizer.batch_decode(gen_tokens)[0]
