@@ -1,5 +1,5 @@
 import click
-from ltp.prompt import get_few_shots, get_prompted_validation, load_gpt_j, prompt
+from ltp.prompt import get_few_shots, prompt_cmv, prompt_corpus, load_gpt_j, prompt
 
 
 def _clamp(value, minValue, maxValue):
@@ -12,9 +12,9 @@ def cli() -> None:
 
 
 @cli.command()
-def probe():
+def probe_corpus():
     print("Loading data")
-    prompted_validation = get_prompted_validation()
+    prompted_validation = prompt_corpus()
     print("Loading model")
     model, tokenizer = load_gpt_j()
 
@@ -30,10 +30,12 @@ def probe():
 
 
 @cli.command()
-def prepare():
-    print("preparing")
-    get_few_shots()
-    print("done")
+@click.argument("dataset", default="corpus")
+def prepare(dataset: str):
+    if dataset == "cmv":
+        get_few_shots("data/cmv_train.csv")
+    else:
+        get_few_shots("data/corpus_train.csv")
 
 
 @cli.command()
@@ -44,16 +46,29 @@ def download_gpt_j():
 
 @cli.command()
 @click.argument("name")
-def run(name):
+def run_corpus(name):
 
     print("Loading data")
-    prompted_validation = get_prompted_validation()
+    prompted_validation = prompt_corpus()
     print("Loading model")
     model, tokenizer = load_gpt_j()
 
     for i, row in enumerate(prompted_validation):
         with open(f"out/{name}_{i}.txt", "w") as out:
             generated_text = prompt(model, tokenizer, row["prompt"])
+            out.write(generated_text)
+
+
+@cli.command()
+@click.argument("name")
+def run_cmv(name):
+    model, tokenizer = load_gpt_j()
+    prompts = prompt_cmv()
+
+    for i, row in prompts:
+        with open(f"out/{name}_cmv_{i}.txt", "w") as out:
+            prompt = row["prompt"]
+            generated_text = prompt(model, tokenizer, prompt)
             out.write(generated_text)
 
 
