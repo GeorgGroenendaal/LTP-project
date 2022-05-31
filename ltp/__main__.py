@@ -33,7 +33,7 @@ def probe_corpus():
 @click.argument("dataset", default="corpus")
 def prepare(dataset: str):
     if dataset == "cmv":
-        get_few_shots("data/cmv_train.csv")
+        get_few_shots("data/cmv_train.csv", dataset)
     else:
         get_few_shots("data/corpus_train.csv")
 
